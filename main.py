@@ -1,10 +1,11 @@
 import os
 
 import requests
-from flask import Flask, send_file, Response
+from flask import Flask
 from bs4 import BeautifulSoup
 
 app = Flask(__name__)
+template = "<a href={{ link }}>{{ link }}</a>"
 
 
 def get_fact():
@@ -17,9 +18,17 @@ def get_fact():
     return facts[0].getText()
 
 
+def get_pig_page(phrase):
+    url = "https://hidden-journey-62459.herokuapp.com/piglatinize/"
+    payload = {"input_text": phrase}
+    response = requests.post(url, data=payload, allow_redirects=False)
+    return response.headers.get('Location')
+
+
 @app.route('/')
 def home():
-    return "FILL ME!"
+    fact = get_fact().strip()
+    return get_pig_page(fact)
 
 
 if __name__ == "__main__":
